@@ -49,57 +49,71 @@ namespace Compression_Algorithm_LZ77
         public string Compression(string input)
         {
             SetStartState(input);
-
-            FirstStep();
-                while (this.buffer.GetValue != string.Empty)
-            {
-                if (!dictionary.GetValue.Contains(buffer.GetValue[0])) StepWOMatch();
-                else
-                {
-                    string matchString = GetMatchString();
-                    int matchLenght = GetMatchLength(matchString);
-                    int matchPosition = GetMahtPosition(matchString);
-                    StepWMatchs(matchLenght,matchPosition);
-                }
-
-
+            RefillBuffer();
+            while (this.buffer.GetValue != string.Empty)
+            {   
+                int matchPosition;
+                int matchLenght;
+                FindMatch(out matchPosition,out matchLenght);
+                AddResult(matchPosition,matchLenght,buffer.GetValue[matchLenght]);
+                RefillDictionary(matchLenght+1);
+                RefillBuffer();
             }
-
             return GetResult();
         }
 
-        private void StepWMatchs(int matchLength, int matchPosition)
+        private void FindMatch(out int position, out int lenght)
         {
+            position = 0;
+            lenght = 0;
+            string match = string.Empty;
+            string tempMatch;
 
-            if (this.bufferSize == matchLength && currentString != string.Empty)
+            for (int i = 1; i < bufferSize; i++)
             {
-                resultTable.Add(new CompressionNode(matchPosition, matchLength, this.currentString[0]));
-                dictionary.Add(buffer.GetValue + this.currentString[0]);
-                buffer.Remove(0, 8);
-                currentString = currentString.Remove(0, 1);                
+                tempMatch = buffer.GetValue.Substring(0, i);
+                if (dictionary.GetValue.Contains(tempMatch))
+                {
+                    match = tempMatch;
+                    lenght++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (lenght > 1)
+            {
+                position = GetMahtPosition(match);
             }
             else
             {
-                resultTable.Add(new CompressionNode(matchPosition, matchLength, buffer.GetValue[matchLength]));
-                dictionary.Add(buffer.GetValue.Substring(0, matchLength + 1));
-                this.buffer.Remove(0, matchLength + 1);
-            }
-
-            if (this.currentString.Length > matchLength)
-            {
-                buffer.Add(this.currentString.Substring(0, matchLength));
-                this.currentString = this.currentString.Remove(0, matchLength);
-            }
-            else
-            {
-                buffer.Add(this.currentString);
-                this.currentString = string.Empty;
+                lenght = 0;
             }
 
         }
 
+        private void RefillBuffer()
+        {
+            while (!buffer.IsFull() && currentString != string.Empty)
+            {
+                buffer.Add(currentString[0]);
+                currentString = currentString.Remove(0, 1);
+            }
 
+        }
 
+        private void RefillDictionary(int lenght)
+        {
+            dictionary.Add(buffer.GetValue.Substring(0,lenght));
+            buffer.Remove(0,lenght);
+        }
+
+        private void AddResult(int position, int lenght,char c)
+        {
+            resultTable.Add(new CompressionNode(position,lenght,c));
+        }
 
         private int GetMahtPosition(string matchString)
         {
@@ -108,75 +122,19 @@ namespace Compression_Algorithm_LZ77
             return tempDictionary.Length;
         }
 
-        private int GetMatchLength(string matchString)
-        {
-            int matchLenght = matchString.Length;
-            string tempBuffer = buffer.GetValue.Remove(0,matchString.Length);
-
-            while ( tempBuffer.Length >= matchString.Length && matchString == tempBuffer.Substring(0, matchString.Length) )
-            {
-                matchLenght += matchLenght;
-                tempBuffer = tempBuffer.Remove(0,matchString.Length);
-            }
-
-            return matchLenght;
-
-
-          
-
-        }
-
-        private string GetMatchString()
-        {
-            string matchString = string.Empty;
-            int lenght = 1;
-            while (lenght <= buffer.GetValue.Length && dictionary.GetValue.Contains(this.buffer.GetValue.Substring(0, lenght)))
-            {
-                matchString = this.buffer.GetValue.Substring(0, lenght);
-                lenght++;
-            }
-            return matchString;
-
-        }
-
-        private void StepWOMatch()
-        {
-            this.dictionary.Add(buffer.GetValue[0]);
-            resultTable.Add(new CompressionNode(0,0, buffer.GetValue[0]));
-            this.buffer.Remove(0,1);
-            if (this.currentString != string.Empty)
-            {
-                buffer.Add(currentString[0]);
-                this.currentString = this.currentString.Remove(0, 1);
-
-            }
-        }
-
-        public void FirstStep()
-        {
-            if (this.currentString.Length <= this.bufferSize)
-            {
-                this.buffer.Add(currentString);
-                currentString = string.Empty;
-            }
-            else
-            {
-                string temp = currentString.Substring(0,this.bufferSize);
-                this.buffer.Add(temp);
-                this.currentString = this.currentString.Remove(0, this.bufferSize);
-            }
-
-        }
-
-
 
         private string GetResult()
         {
             string result = string.Empty;
 
             foreach (var item in resultTable)
-                result += item.ToString();
-
+            {
+                if (item.I == 0) result += item.Symbol.ToString();
+                else
+                {
+                    result += item.ToString();
+                }
+            }
             return result;
         }
 
