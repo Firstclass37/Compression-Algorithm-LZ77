@@ -10,6 +10,7 @@ namespace Compression_Algorithm_LZ77
     {
         private int dictionarySize;
         private int bufferSize;
+        private int minMatchSize;
         private Buffer buffer;
         private Dictionary dictionary;
         private List<CompressionNode> resultTable;
@@ -23,7 +24,7 @@ namespace Compression_Algorithm_LZ77
             }
             set
             {
-                dictionarySize = value > 50 ? value : 50;
+                dictionarySize = value > 100 ? value : 100;
             }
 
         }
@@ -35,71 +36,90 @@ namespace Compression_Algorithm_LZ77
             }
             set
             {
-                bufferSize = (value == 8 || value == 16 || value == 32) ? value : 8;
+                bufferSize = value >8  && value < 64 ? value : 8;
             }
+        }
+        public int MinMatchLenght
+        {
+            get { return minMatchSize; }
+            set { minMatchSize = value > 2 && value < bufferSize ? value : 2; }
         }
 
         public LZ77()
         {
             dictionarySize = 50;
             bufferSize = 8;
+            minMatchSize = 2;
         }
 
 
         public string Compression(string input)
         {
             SetStartState(input);
-
-            FirstStep();
-                while (this.buffer.GetValue != string.Empty)
-            {
-                if (!dictionary.GetValue.Contains(buffer.GetValue[0])) StepWOMatch();
-                else
-                {
-                    string matchString = GetMatchString();
-                    int matchLenght = GetMatchLength(matchString);
-                    int matchPosition = GetMahtPosition(matchString);
-                    StepWMatchs(matchLenght,matchPosition);
-                }
-
-
+            RefillBuffer();
+            while (this.buffer.GetValue != string.Empty)
+            {   
+                int matchPosition;
+                int matchLenght;
+                FindMatch(out matchPosition,out matchLenght);
+                AddResult(matchPosition,matchLenght,buffer.GetValue[matchLenght]);
+                RefillDictionary(matchLenght+1);
+                RefillBuffer();
             }
-
             return GetResult();
         }
 
-        private void StepWMatchs(int matchLength, int matchPosition)
+        private void FindMatch(out int position, out int lenght)
         {
-
-            if (this.bufferSize == matchLength && currentString != string.Empty)
+            position = 0;
+            lenght = 0;
+            string match = string.Empty;
+            
+            for (int i = 1; i < buffer.GetValue.Length; i++)
             {
-                resultTable.Add(new CompressionNode(matchPosition, matchLength, this.currentString[0]));
-                dictionary.Add(buffer.GetValue + this.currentString[0]);
-                buffer.Remove(0, 8);
-                currentString = currentString.Remove(0, 1);                
+                string tempMatch = buffer.GetValue.Substring(0, i);
+                if (dictionary.GetValue.Contains(tempMatch))
+                {
+                    match = tempMatch;
+                    lenght++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (lenght >= minMatchSize)
+            {
+                position = GetMahtPosition(match);
             }
             else
             {
-                resultTable.Add(new CompressionNode(matchPosition, matchLength, buffer.GetValue[matchLength]));
-                dictionary.Add(buffer.GetValue.Substring(0, matchLength + 1));
-                this.buffer.Remove(0, matchLength + 1);
-            }
-
-            if (this.currentString.Length > matchLength)
-            {
-                buffer.Add(this.currentString.Substring(0, matchLength));
-                this.currentString = this.currentString.Remove(0, matchLength);
-            }
-            else
-            {
-                buffer.Add(this.currentString);
-                this.currentString = string.Empty;
+                lenght = 0;
             }
 
         }
 
+        private void RefillBuffer()
+        {
+            while (!buffer.IsFull() && currentString != string.Empty)
+            {
+                buffer.Add(currentString[0]);
+                currentString = currentString.Remove(0, 1);
+            }
 
+        }
 
+        private void RefillDictionary(int lenght)
+        {
+            dictionary.Add(buffer.GetValue.Substring(0,lenght));
+            buffer.Remove(0,lenght);
+        }
+
+        private void AddResult(int position, int lenght,char c)
+        {
+            resultTable.Add(new CompressionNode(position,lenght,c));
+        }
 
         private int GetMahtPosition(string matchString)
         {
@@ -108,77 +128,51 @@ namespace Compression_Algorithm_LZ77
             return tempDictionary.Length;
         }
 
-        private int GetMatchLength(string matchString)
-        {
-            int matchLenght = matchString.Length;
-            string tempBuffer = buffer.GetValue.Remove(0,matchString.Length);
-
-            while ( tempBuffer.Length >= matchString.Length && matchString == tempBuffer.Substring(0, matchString.Length) )
-            {
-                matchLenght += matchLenght;
-                tempBuffer = tempBuffer.Remove(0,matchString.Length);
-            }
-
-            return matchLenght;
-
-
-          
-
-        }
-
-        private string GetMatchString()
-        {
-            string matchString = string.Empty;
-            int lenght = 1;
-            while (lenght <= buffer.GetValue.Length && dictionary.GetValue.Contains(this.buffer.GetValue.Substring(0, lenght)))
-            {
-                matchString = this.buffer.GetValue.Substring(0, lenght);
-                lenght++;
-            }
-            return matchString;
-
-        }
-
-        private void StepWOMatch()
-        {
-            this.dictionary.Add(buffer.GetValue[0]);
-            resultTable.Add(new CompressionNode(0,0, buffer.GetValue[0]));
-            this.buffer.Remove(0,1);
-            if (this.currentString != string.Empty)
-            {
-                buffer.Add(currentString[0]);
-                this.currentString = this.currentString.Remove(0, 1);
-
-            }
-        }
-
-        public void FirstStep()
-        {
-            if (this.currentString.Length <= this.bufferSize)
-            {
-                this.buffer.Add(currentString);
-                currentString = string.Empty;
-            }
-            else
-            {
-                string temp = currentString.Substring(0,this.bufferSize);
-                this.buffer.Add(temp);
-                this.currentString = this.currentString.Remove(0, this.bufferSize);
-            }
-
-        }
-
-
-
         private string GetResult()
         {
             string result = string.Empty;
 
             foreach (var item in resultTable)
-                result += item.ToString();
-
+            {
+                if (item.I == 0) result += item.Symbol.ToString();
+                else
+                {
+                    result += item.ToString();
+                }
+            }
             return result;
         }
+
+
+        public string Decompression(string targetString)
+        {
+            SetStartState(targetString);
+
+            
+
+            while (currentString.Contains("("))
+            {
+                int indexLeft = currentString.IndexOf("(");
+                int indexRight = currentString.IndexOf(")");
+                string tempMatch = currentString.Substring(indexLeft,indexRight - indexLeft + 1);
+                string[] par = tempMatch.Remove(0, 1).Remove(tempMatch.Length - 2, 1).Split(',');
+                int pos = int.Parse(par[0]);
+                int len = int.Parse(par[1]);
+                string matchString = GetMatch(indexLeft-pos,len);
+                currentString = currentString.Remove(indexLeft, indexRight - indexLeft + 1).Insert(indexLeft,matchString);
+            }
+
+            return currentString;
+
+        }
+
+        private string GetMatch(int pos, int len)
+        {
+            string result = currentString.Substring(pos,len);
+            return result;
+        }
+
+
 
         private void SetStartState(string input)
         {

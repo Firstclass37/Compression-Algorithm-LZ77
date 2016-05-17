@@ -55,5 +55,11 @@ namespace Compression_Algorithm_LZ77
         {
             this.buffer = buffer.Remove(index,count); 
         }
+
+        public bool IsFull()
+        {
+            if (buffer.Length < maxSize) return false;
+            else return true;
+        }
     }
 }
