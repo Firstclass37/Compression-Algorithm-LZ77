@@ -52,10 +52,13 @@ namespace Compression_Algorithm_LZ77
             minMatchSize = 2;
         }
 
-
-        public string Compression(string input)
+        /// <summary>
+        /// Method compress target string and return new compressed string
+        /// </summary>
+        /// <param name="inputString"></param>
+        public string Compression(string inputString)
         {
-            SetStartState(input);
+            SetStartState(inputString);
             RefillBuffer();
             while (this.buffer.GetValue != string.Empty)
             {   
@@ -68,7 +71,11 @@ namespace Compression_Algorithm_LZ77
             }
             return GetResult();
         }
-
+        /// <summary>
+        /// Find match and return position and lenght
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="lenght"></param>
         private void FindMatch(out int position, out int lenght)
         {
             position = 0;
@@ -99,7 +106,9 @@ namespace Compression_Algorithm_LZ77
             }
 
         }
-
+        /// <summary>
+        /// Method add symbols in buffer from current string
+        /// </summary>
         private void RefillBuffer()
         {
             while (!buffer.IsFull() && currentString != string.Empty)
@@ -109,25 +118,40 @@ namespace Compression_Algorithm_LZ77
             }
 
         }
-
+        /// <summary>
+        /// Method refill dictionary from buffer for input lenght
+        /// </summary>
+        /// <param name="lenght"></param>
         private void RefillDictionary(int lenght)
         {
             dictionary.Add(buffer.GetValue.Substring(0,lenght));
             buffer.Remove(0,lenght);
         }
-
+        /// <summary>
+        /// Add current result in result table
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="lenght"></param>
+        /// <param name="c"></param>
         private void AddResult(int position, int lenght,char c)
         {
             resultTable.Add(new CompressionNode(position,lenght,c));
         }
-
+        /// <summary>
+        /// Method return a position for input match
+        /// </summary>
+        /// <param name="matchString"></param>
+        /// <returns></returns>
         private int GetMahtPosition(string matchString)
         {
             int tempIndex = dictionary.GetValue.LastIndexOf(matchString);
             string tempDictionary = dictionary.GetValue.Substring(tempIndex);
             return tempDictionary.Length;
         }
-
+        /// <summary>
+        /// Convert results table in a string and return result as string
+        /// </summary>
+        /// <returns></returns>
         private string GetResult()
         {
             string result = string.Empty;
@@ -143,7 +167,11 @@ namespace Compression_Algorithm_LZ77
             return result;
         }
 
-
+        /// <summary>
+        /// Method decompress input string and return new decompressed string
+        /// </summary>
+        /// <param name="targetString"></param>
+        /// <returns></returns>
         public string Decompression(string targetString)
         {
             SetStartState(targetString);
@@ -165,7 +193,12 @@ namespace Compression_Algorithm_LZ77
             return currentString;
 
         }
-
+        /// <summary>
+        /// Method return match string from input position and have input leght
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
         private string GetMatch(int pos, int len)
         {
             string result = currentString.Substring(pos,len);
@@ -173,7 +206,10 @@ namespace Compression_Algorithm_LZ77
         }
 
 
-
+        /// <summary>
+        /// Method set start setting
+        /// </summary>
+        /// <param name="input"></param>
         private void SetStartState(string input)
         {
             this.currentString = input;
