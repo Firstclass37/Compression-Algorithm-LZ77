@@ -52,6 +52,7 @@ namespace Compression_Algorithm_LZ77
             minMatchSize = 2;
         }
 
+
         public string Compression(string input)
         {
             SetStartState(input);
@@ -141,9 +142,6 @@ namespace Compression_Algorithm_LZ77
             }
             return result;
         }
-
-
-
 
 
         public string Decompression(string targetString)
