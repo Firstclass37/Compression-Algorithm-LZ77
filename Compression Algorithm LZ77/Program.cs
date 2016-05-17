@@ -90,7 +90,10 @@ namespace Compression_Algorithm_LZ77
                     
 
         }
-
+        /// <summary>
+        /// Show action-choice dialoge for user and return enterid string
+        /// </summary>
+        /// <returns></returns>
         private static Action ActionChoiceDialog()
         {
             Console.Write("Chose the action: 1-Compress 2-Decompres");
@@ -108,7 +111,11 @@ namespace Compression_Algorithm_LZ77
             
 
         }
-
+        /// <summary>
+        /// Show yes-no dialog for user and return boolean 
+        /// </summary>
+        /// <param name="question"></param>
+        /// <returns></returns>
         private static bool YNDialog(string question)
         {
             Console.Write(question + " " + "(y/n)");
@@ -120,14 +127,22 @@ namespace Compression_Algorithm_LZ77
             Console.WriteLine();
             return false;
         }
-
+        /// <summary>
+        /// Show input message for user wiht input color
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="color"></param>
         private static void Message(string message,ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(message);
             Console.ResetColor();
         }
-
+        /// <summary>
+        /// Show штзге question for user and return enterid string
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         private static string CommandDialog(string message)
         {
             Console.Write(message + " ");
@@ -135,7 +150,11 @@ namespace Compression_Algorithm_LZ77
             Console.WriteLine();
             return result;
         }
-
+        /// <summary>
+        /// Show input message wiht int answer
+        /// </summary>
+        /// <param name="question"></param>
+        /// <returns></returns>
         private static int GetValueDialog(string question)
         {
             int result;
@@ -144,12 +163,21 @@ namespace Compression_Algorithm_LZ77
             Console.WriteLine();
             return result;          
         }
-
+        /// <summary>
+        /// Method get text from input path and return text as string
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private static string GetTextFromPath(string path)
         {            
            return  File.ReadAllText(path);                   
         }
-
+        /// <summary>
+        /// Method save string result in file to input path with name (compress-decompress) + current file name
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="result"></param>
+        /// <param name="action"></param>
         private static void Saveresult(string path,string result,Action action)
         {
             FileInfo currentFile = new FileInfo(path);

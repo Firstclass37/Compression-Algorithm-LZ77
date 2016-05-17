@@ -10,7 +10,9 @@ namespace Compression_Algorithm_LZ77
     {
         private string dictionary;
         private int maxSize;
-
+        /// <summary>
+        /// Property for get dictionary value as string. Only get 
+        /// </summary>
         public string GetValue
         {
             get
@@ -25,7 +27,10 @@ namespace Compression_Algorithm_LZ77
             dictionary = string.Empty;
             this.maxSize = size;
         }
-
+        /// <summary>
+        /// Add input string in the dictionary
+        /// </summary>
+        /// <param name="input"></param>
         public void Add(string input)
         {
             if ((dictionary.Length + input.Length) <= maxSize)
@@ -38,7 +43,10 @@ namespace Compression_Algorithm_LZ77
                 dictionary = dictionary.Remove(0, difference) + input;
             }
         }
-
+        /// <summary>
+        /// Add input char in the dictionary as string
+        /// </summary>
+        /// <param name="input"></param>
         public void Add(char input)
         {
             if ((dictionary.Length + 1) <= maxSize)

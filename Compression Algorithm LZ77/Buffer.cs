@@ -25,7 +25,10 @@ namespace Compression_Algorithm_LZ77
             buffer = string.Empty;
             this.maxSize = size;
         }
-
+        /// <summary>
+        /// Add input string in the buffer
+        /// </summary>
+        /// <param name="input"></param>
         public void Add(string input)
         {
             if ((buffer.Length + input.Length) <= maxSize)
@@ -38,7 +41,10 @@ namespace Compression_Algorithm_LZ77
                 buffer = buffer.Remove(0, difference) + input;
             }
         }
-
+        /// <summary>
+        /// Add input char in the buffer as string
+        /// </summary>
+        /// <param name="input"></param>
         public void Add(char input)
         {
             if ((buffer.Length + 1) <= maxSize)
@@ -50,16 +56,29 @@ namespace Compression_Algorithm_LZ77
                 buffer = buffer.Remove(0, 1) + input.ToString();
             }
         }
-
+        /// <summary>
+        /// Remove iput string from buffer. 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="count"></param>
         public void Remove(int index, int count)
         {
             this.buffer = buffer.Remove(index,count); 
         }
-
+        /// <summary>
+        /// Return boolean. True if buffer is full or false if no
+        /// </summary>
+        /// <returns></returns>
         public bool IsFull()
         {
-            if (buffer.Length < maxSize) return false;
-            else return true;
+            if (buffer.Length < maxSize)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }
