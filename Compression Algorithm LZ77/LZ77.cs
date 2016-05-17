@@ -10,6 +10,7 @@ namespace Compression_Algorithm_LZ77
     {
         private int dictionarySize;
         private int bufferSize;
+        private int minMatchSize;
         private Buffer buffer;
         private Dictionary dictionary;
         private List<CompressionNode> resultTable;
@@ -23,7 +24,7 @@ namespace Compression_Algorithm_LZ77
             }
             set
             {
-                dictionarySize = value > 50 ? value : 50;
+                dictionarySize = value > 100 ? value : 100;
             }
 
         }
@@ -35,16 +36,21 @@ namespace Compression_Algorithm_LZ77
             }
             set
             {
-                bufferSize = (value == 8 || value == 16 || value == 32) ? value : 8;
+                bufferSize = value >8  && value < 64 ? value : 8;
             }
+        }
+        public int MinMatchLenght
+        {
+            get { return minMatchSize; }
+            set { minMatchSize = value > 2 && value < bufferSize ? value : 2; }
         }
 
         public LZ77()
         {
             dictionarySize = 50;
             bufferSize = 8;
+            minMatchSize = 2;
         }
-
 
         public string Compression(string input)
         {
@@ -67,11 +73,10 @@ namespace Compression_Algorithm_LZ77
             position = 0;
             lenght = 0;
             string match = string.Empty;
-            string tempMatch;
-
-            for (int i = 1; i < bufferSize; i++)
+            
+            for (int i = 1; i < buffer.GetValue.Length; i++)
             {
-                tempMatch = buffer.GetValue.Substring(0, i);
+                string tempMatch = buffer.GetValue.Substring(0, i);
                 if (dictionary.GetValue.Contains(tempMatch))
                 {
                     match = tempMatch;
@@ -83,7 +88,7 @@ namespace Compression_Algorithm_LZ77
                 }
             }
 
-            if (lenght > 1)
+            if (lenght > minMatchSize)
             {
                 position = GetMahtPosition(match);
             }
@@ -122,7 +127,6 @@ namespace Compression_Algorithm_LZ77
             return tempDictionary.Length;
         }
 
-
         private string GetResult()
         {
             string result = string.Empty;
@@ -137,6 +141,36 @@ namespace Compression_Algorithm_LZ77
             }
             return result;
         }
+
+
+
+
+
+        public string Decompression(string targetString)
+        {
+            string result = string.Empty;
+            SetStartState(targetString);
+
+            RefillBuffer();
+
+            while (this.buffer.GetValue != string.Empty)
+            {
+                
+            }
+
+            return result;
+
+
+
+
+
+            return result;
+        }
+
+
+
+
+
 
         private void SetStartState(string input)
         {
