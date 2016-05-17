@@ -88,7 +88,7 @@ namespace Compression_Algorithm_LZ77
                 }
             }
 
-            if (lenght > minMatchSize)
+            if (lenght >= minMatchSize)
             {
                 position = GetMahtPosition(match);
             }
@@ -148,27 +148,31 @@ namespace Compression_Algorithm_LZ77
 
         public string Decompression(string targetString)
         {
-            string result = string.Empty;
             SetStartState(targetString);
 
-            RefillBuffer();
+            
 
-            while (this.buffer.GetValue != string.Empty)
+            while (currentString.Contains("("))
             {
-                
+                int indexLeft = currentString.IndexOf("(");
+                int indexRight = currentString.IndexOf(")");
+                string tempMatch = currentString.Substring(indexLeft,indexRight - indexLeft + 1);
+                string[] par = tempMatch.Remove(0, 1).Remove(tempMatch.Length - 2, 1).Split(',');
+                int pos = int.Parse(par[0]);
+                int len = int.Parse(par[1]);
+                string matchString = GetMatch(indexLeft-pos,len);
+                currentString = currentString.Remove(indexLeft, indexRight - indexLeft + 1).Insert(indexLeft,matchString);
             }
 
-            return result;
+            return currentString;
 
-
-
-
-
-            return result;
         }
 
-
-
+        private string GetMatch(int pos, int len)
+        {
+            string result = currentString.Substring(pos,len);
+            return result;
+        }
 
 
 
