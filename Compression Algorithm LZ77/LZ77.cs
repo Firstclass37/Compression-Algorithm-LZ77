@@ -150,10 +150,10 @@ namespace Compression_Algorithm_LZ77
 
             
 
-            while (currentString.Contains("("))
+            while (currentString.Contains("["))
             {
-                int indexLeft = currentString.IndexOf("(");
-                int indexRight = currentString.IndexOf(")");
+                int indexLeft = currentString.IndexOf("[");
+                int indexRight = currentString.IndexOf("]");
                 string tempMatch = currentString.Substring(indexLeft,indexRight - indexLeft + 1);
                 string[] par = tempMatch.Remove(0, 1).Remove(tempMatch.Length - 2, 1).Split(',');
                 int pos = int.Parse(par[0]);

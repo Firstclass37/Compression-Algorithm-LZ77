@@ -109,7 +109,7 @@ namespace Compression_Algorithm_LZ77
 
         }
 
-        static bool YNDialog(string question)
+        private static bool YNDialog(string question)
         {
             Console.Write(question + " " + "(y/n)");
             if (Console.ReadKey().KeyChar == 'y')
@@ -121,14 +121,14 @@ namespace Compression_Algorithm_LZ77
             return false;
         }
 
-        static void Message(string message,ConsoleColor color)
+        private static void Message(string message,ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(message);
             Console.ResetColor();
         }
 
-        static string CommandDialog(string message)
+        private static string CommandDialog(string message)
         {
             Console.Write(message + " ");
             string result = Console.ReadLine();
@@ -136,7 +136,7 @@ namespace Compression_Algorithm_LZ77
             return result;
         }
 
-        static int GetValueDialog(string question)
+        private static int GetValueDialog(string question)
         {
             int result;
             Console.Write(question + " ");
@@ -145,12 +145,12 @@ namespace Compression_Algorithm_LZ77
             return result;          
         }
 
-        static string GetTextFromPath(string path)
+        private static string GetTextFromPath(string path)
         {            
            return  File.ReadAllText(path);                   
         }
 
-        static void Saveresult(string path,string result,Action action)
+        private static void Saveresult(string path,string result,Action action)
         {
             FileInfo currentFile = new FileInfo(path);
             string saveName = "(comppressed)" + currentFile.Name;
