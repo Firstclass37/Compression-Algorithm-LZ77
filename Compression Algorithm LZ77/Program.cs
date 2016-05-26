@@ -42,8 +42,8 @@ namespace Compression_Algorithm_LZ77
                 {
                     case Action.Compress: path = CommandDialog("path for compress: ");
                         break;
-                    case Action.Decompress: path = CommandDialog("path for decompress: ");
-                        break;
+                    case Action.Decompress:
+                        Console.WriteLine("decompression doesnt work");continue;
                     default: Message("Unknown opertion",ConsoleColor.Red);
                         continue;
                 }
